@@ -20,7 +20,7 @@ event <- event[,dateS := as.POSIXct(format(event$'Timestamp in local format',
 
 #### read and prepare data from statistic*.csv files ####
 
-all.files <- list.files(path = "data/", 
+all.files <- list.files(path = "data", 
   recursive = TRUE,
   pattern = "export",
   full.names = TRUE)
@@ -81,9 +81,10 @@ colnames(event.list$'Sprint')                   <- kinexonEventNames$'Sprints'
 
 rm(list=setdiff(ls(), "event.list"))
 
+#### stack club data ####
+# ToDo combine data.frame BHC and DJFK
 
 
 
-  
 
 
