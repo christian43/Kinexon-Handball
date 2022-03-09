@@ -1,7 +1,4 @@
-#### Path ####
-# Put your Path in your .Rprofile or use setwd(getwd())
-# Sys.setenv(kinexonPath="~/Documents/Projekte/Ul/Handball/Kinexon/R/") 
-Sys.getenv("kinexonPath")
+#### set Path ####
 setwd(Sys.getenv("kinexonPath"))
 
 #### load packages ####
@@ -90,5 +87,8 @@ dat_match  <- droplevels(dat_match)
 
 
 
-#### remove all except data frame "export" ####
+#### remove all except data frame "dat_HZ" and "dat_match" ####
 rm(list=setdiff(ls(), c("dat_HZ", "dat_match")))
+#### save as csv ####
+write.csv(dat_HZ, "Data/export_HZ.csv")
+write.csv(dat_match, "Data/export_match.csv")
