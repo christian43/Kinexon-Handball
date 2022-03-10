@@ -1,5 +1,6 @@
 #### set Path ####
-setwd(Sys.getenv("kinexonPath"))
+# setwd(Sys.getenv("kinexonPath"))
+setwd(Sys.getenv("MY_Ext"))
 
 #### load packages ####
 
@@ -18,7 +19,7 @@ dat <- rbindlist( l, fill = TRUE, idcol = "File")
 #### clean data ####
 
 ### add filename and split filename to get Saison and Spieltag ### 
-cols <- c("data", "Saison","Spieltag1","Spieltag","Filename")
+cols <- c("Verein","data", "Saison","Spieltag1","Spieltag","Filename")
 dat[, c(cols) := tstrsplit(File, "/", fixed=TRUE)]
 dat[ ,c("data","Spieltag1","Filename") := NULL]
 
@@ -97,5 +98,5 @@ dat_match  <- droplevels(dat_match)
 rm(list=setdiff(ls(), c("dat_HZ", "dat_match")))
 
 #### save as csv ####
-write.csv(dat_HZ, "Data/export_HZ.csv")
-write.csv(dat_match, "Data/export_match.csv")
+write.csv(dat_HZ, "~/Desktop/export_HZ.csv")
+write.csv(dat_match, "~/Desktop/export_match.csv")
