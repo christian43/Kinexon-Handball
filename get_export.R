@@ -84,7 +84,8 @@ dat[i,]$Description[nchar(dat[i,]$Description)<15] <- "2.HZ"
 unique(dat$Description)
 
 dat_HZ <- dat[Description == '1.HZ' | Description == '2.HZ']
-dat_match <- dat[Description != '1.HZ' | !Description != '2.HZ']
+dat_match <- dat[!Description == '1.HZ']
+dat_match <- dat_match[!Description == '2.HZ']
 
 dat_HZ$Description  <- as.factor(dat_HZ$Description)
 dat_match$Description  <- as.factor(dat_match$Description)
