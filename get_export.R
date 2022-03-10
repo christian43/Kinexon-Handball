@@ -8,7 +8,7 @@ library(hms)
 
 #### read data #### 
 
-all.files <- list.files(path = "data", 
+all.files <- list.files(path = "Data/RAW", 
   recursive = TRUE,
   pattern = "export",
   full.names = TRUE)
@@ -19,9 +19,9 @@ dat <- rbindlist( l, fill = TRUE, idcol = "File")
 #### clean data ####
 
 ### add filename and split filename to get Saison and Spieltag ### 
-cols <- c("Verein","data", "Saison","Spieltag1","Spieltag","Filename")
+cols <- c("Data","RAW","Verein","Saison", "Spieltag1","Spieltag","Filename")
 dat[, c(cols) := tstrsplit(File, "/", fixed=TRUE)]
-dat[ ,c("data","Spieltag1","Filename") := NULL]
+dat[ ,c("Data", "RAW", "Spieltag1","Filename") := NULL]
 
 ### format timestamp ###
 dat[, 'Session begin date (Local timezone)' := as.POSIXct(dat$'Session begin date (Local timezone)', 
