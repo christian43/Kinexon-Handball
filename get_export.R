@@ -7,14 +7,20 @@ library(hms)
 
 #### read data #### 
 
-all.files <- list.files(path = "data/", 
+all.files <- list.files(path = "data", 
   recursive = TRUE,
   pattern = "export",
   full.names = TRUE)
 l <- lapply(all.files, fread, sep=";", fill = TRUE, na.strings="")
-dat <- rbindlist( l, fill = TRUE)
+names(l) <- all.files
+dat <- rbindlist( l, fill = TRUE, idcol = "File")
 
 #### clean data ####
+
+### add filename and split filename to get Saison and Spieltag ### 
+cols <- c("data", "Saison","Spieltag1","Spieltag","Filename")
+dat[, c(cols) := tstrsplit(File, "/", fixed=TRUE)]
+dat[ ,c("data","Spieltag1","Filename") := NULL]
 
 ### format timestamp ###
 dat[, 'Session begin date (Local timezone)' := as.POSIXct(dat$'Session begin date (Local timezone)', 
@@ -89,6 +95,7 @@ dat_match  <- droplevels(dat_match)
 
 #### remove all except data frame "dat_HZ" and "dat_match" ####
 rm(list=setdiff(ls(), c("dat_HZ", "dat_match")))
+
 #### save as csv ####
 write.csv(dat_HZ, "Data/export_HZ.csv")
 write.csv(dat_match, "Data/export_match.csv")
