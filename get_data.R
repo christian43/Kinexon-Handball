@@ -1,12 +1,12 @@
 #### set Path ####
 setwd(Sys.getenv("MY_Ext"))
 
-#### load packages
 
 #### load event*.csv files #####
 
-# set Verein und Pfad
-Verein <- "DHFK"
+# set Verein und Pfad 
+# CAUTION this step should be don for each club separatly!!!
+Verein <- "BHC"
 Path <- paste0("RAW/",Verein)
 
 # load all files 
@@ -74,7 +74,9 @@ lapply(event.list, function(x) remove_NA(x))
 
 #### load colnames for event data and rename colnames in event list ####
 
-load("~/Documents/Projekte/Ul/Handball/Kinexon/R/Rkinexon/data/kinexonEventNames.rda")
+# put here your path to "kinexonEventNames.rda"
+pathTo <- paste0(Sys.getenv("kinexonPath"),"Rkinexon/data/kinexonEventNames.rda")
+load(pathTo)
 kinexonEventNames <- lapply(kinexonEventNames, function(x) {x <-  c("dateS",x,"Verein", "Saison", "Spieltag", "club", "ids")})
 
 colnames(event.list$'Acceleration')             <- kinexonEventNames$'Accelerations'
@@ -100,8 +102,14 @@ rm(list=setdiff(ls(), c("event.list","event.list.BHC", "event.list.DHFK")))
 event.list.DHFK <- event.list
 event.list.BHC <- event.list
 
+
 event.list.DHFK <- event.list.DHFK[order(names(event.list.DHFK))]
 event.list.BHC <- event.list.BHC[order(names(event.list.BHC))]
 
 final.list <- Map(rbind,event.list.DHFK, event.list.BHC)
 
+#### write to csv ####
+file_out <- paste0("CSV/",names(final.list), ".csv")
+for(i in 1:length(final.list)) {
+  write.csv(final.list[[i]], file_out[i])
+}
