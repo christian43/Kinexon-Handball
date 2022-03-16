@@ -1,3 +1,6 @@
+#### Packages ####
+library(papeR)
+
 #### set Path ####
 setwd(Sys.getenv("kinexonPath"))
 
@@ -9,7 +12,7 @@ dat <- fread("Data/CSV/export_match.csv", header = TRUE, stringsAsFactors=TRUE)
 
 #### allgemeines ####
 
-# check data
+# check and clean data
 dim(dat)
 
 # Wieviel Spieler
@@ -28,12 +31,14 @@ unique(dat$Saison)
 # Wieviele Spieltage
 dat[,length(unique(Spieltag)), by = list(Verein,Saison)]
 
-#### Time on Playing field ####
+# Time on Playing field #
+
 summary(dat$`Time on Playing Field (hh:mm:ss)`)
 colSums(dat == 0)[37]
 dat <- dat[`Time on Playing Field (hh:mm:ss)` != 0]
 
-#### Distance ####
+
+# Distance #
 summary(dat$`Distance (m)`)
 colSums(dat == 0)[13]
 dat <- dat[`Distance (m)` != 0]
@@ -43,11 +48,11 @@ dat <- dat[`Distance (m)` != 0]
 s <- dfSummary(dat, style='grid', plain.ascii = FALSE, graph.col = TRUE)
 print(s, method = 'browser') 
 
-#### external load #### 
+#### external load by position #### 
 # time on playing field
 # total distance, 
 # distance covered within speed categories,
-# Acceleration and Deceleration
+# !Acceleration and Deceleration
 # Jumps
 # Impacts
 # shots
@@ -74,10 +79,29 @@ cols <- c('Session begin date (Local timezone)',
 )
 datlast <- dat[,..cols]
 
+# Wieviel Spieler
+length(unique(datlast$Name))
+
+# Wieviel Spiele
+length(unique(datlast$`Session ID`))
+
+# Wieviele Saisons
+unique(datlast$Saison)
+
 summary(datlast)
+# show rows with NA
+datlast[!complete.cases(datlast), ]
 
 # convert to long format
 ids <- names(datlast)[1:6]
 datlong <- melt(datlast, id.vars = ids)
 
+# simple check 
 ggplot(datlong[!Position=='TW'], aes(y = value, x = Position), fill = Position) + geom_boxplot() + facet_wrap(~variable, scale="free")
+
+x <- datlong[,.(mean = round(mean(value, na.rm=TRUE),2),
+  sd = round(sd(value, na.rm=TRUE))), by = list(variable, Position)][order(variable, mean)]
+
+x[, new := paste0(mean," (", sd,")", sep = " ")]
+dcast(x, Position ~ variable , value.var = list("new"))
+
