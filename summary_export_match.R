@@ -33,6 +33,7 @@ unique(dat$Saison)
 # Wieviele Spieltage
 dat[,length(unique(Spieltag)), by = list(Verein,Saison)]
 
+### clean data ####
 # Time on Playing field #
 playtime <- 600
 summary(dat$`Time on Playing Field (hh:mm:ss)`)
@@ -45,7 +46,7 @@ summary(dat$`Distance (m)`)
 colSums(dat ==  0)[13]
 dat <- dat[`Distance (m)` != 0]
 
-# print summary
+#### print summary ####
 
 s <- dfSummary(dat, style='grid', plain.ascii = FALSE, graph.col = TRUE)
 print(s, method = 'browser') 
@@ -71,16 +72,25 @@ cols <- c('Session begin date (Local timezone)',
   'Distance (m)',
   'Distance (speed | Very high) (m)',
   'Distance (speed | High) (m)',
-  'Distance (speed | Low) (m)',
   'Distance (speed | Medium) (m)',
+  'Distance (speed | Low) (m)',
   'Distance (speed | Very low) (m)',
+  'Time (speed | Very high) (hh:mm:ss)',
+  'Time (speed | High) (hh:mm:ss)',
+  'Time (speed | Medium) (hh:mm:ss)',
+  'Time (speed | Low) (hh:mm:ss)',
+  'Time (speed | Very low) (hh:mm:ss)',
   'Changes of Direction',
+  'Changes of Direction (left)',
+  'Changes of Direction (right)',
   'Impacts',
   'Jumps',
   'Passes',
   'Shots',
+  'Sprints',
   'Speed (max.) (km/h)'
 )
+
 datlast <- dat[,..cols]
 
 # Wieviel Spieler
@@ -106,7 +116,7 @@ ggplot(datlong[!Position=='TW'], aes(y = value, x = Position), fill = Position) 
 x <- datlong[,.(mean = round(mean(value, na.rm=TRUE),2),
   sd = round(sd(value, na.rm=TRUE))), by = list(variable, Position)][order(variable, mean)]
 x[, new := paste0(mean," (", sd,")", sep = " ")]
-dcast(x, Position ~ variable , value.var = list("new"))
+dcast(x, variable ~ Position , value.var = list("new"))
 
 #### correlation between vars ####
 
