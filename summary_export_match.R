@@ -20,7 +20,7 @@
 dim(dat)
 
 # Wieviel Spieler
-	length(unique(dat$Name))
+length(unique(dat$Name))
 unique(dat$Name)
 
 # Wieviel Spiele
@@ -276,22 +276,62 @@ datlong <- melt(datlast, id.vars = ids)
 
 #### plot Playing time on field ####
 
-einsatzzeit <- dat[,c('Time.on.Playing.Field..hh.mm.ss.', 'Player.ID', 'Session.ID')]
+einsatzzeit <- dat[,c('Time.on.Playing.Field..hh.mm.ss.', 
+  'Player.ID', 
+  'Session.ID', 
+  'Position', 
+  'Session.begin.date..Local.timezone.')]
+setorder(dat, 'Session.begin.date..Local.timezone.')
 einsatzzeit <- split(einsatzzeit, by = 'Player.ID')
 
 myplot <- function(x){
+# x <- einsatzzeit[[1]]
 hist(x$Time.on.Playing.Field..hh.mm.ss., breaks = 50,
   border = "white", 
   main = paste("Histogram of playing time for Player ID", 
   unique(x$Player.ID)),
   xlab = 'Time in seconds')
 mtext(paste('Games = ', length(x$Session.ID)), side =1, line = 3, adj = 1, cex = 0.8)
+mtext(paste('Playing Position = ', unique(x$Position)), side =3, line = 0, adj = 0, cex = 0.8)
 }
 
-pdf_datei <- '~/Desktop/plaingtime.pdf'
+pdf_datei <- '~/Desktop/playingtime_hist.pdf'
 cairo_pdf(pdf_datei, onefile = TRUE)
 invisible(lapply(einsatzzeit, function(x) myplot(x)))
 dev.off()
+
+myplot2 <- function(x){
+barplot(x$Time.on.Playing.Field..hh.mm.ss., 
+  names.arg = x$Session.begin.date..Local.timezone.,
+  cex.names = 0.6,
+  border = "white", 
+  main = paste("Playing time for Player ID", 
+  unique(x$Player.ID)),
+  xlab = 'Session ID',
+  ylab = 'Playing time [s]'
+)
+mtext(paste('Games = ', length(x$Session.ID)), side =1, line = 3, adj = 1, cex = 0.8)
+mtext(paste('Playing Position = ', unique(x$Position)), side =3, line = 0, adj = 0, cex = 0.8)
+}
+
+pdf_datei <- '~/Desktop/playingtime_bar.pdf'
+cairo_pdf(pdf_datei, onefile = TRUE)
+invisible(lapply(einsatzzeit, function(x) myplot2(x)))
+dev.off()
+
+#### print csv to fill with results ####
+
+cols <- c(
+  'Verein',
+  'Saison',
+  'Spieltag',
+  'Session.begin.date..Local.timezone.',
+  'Description',
+  'Session.ID'
+)
+x <- dat[,..cols]
+write.csv(unique(x), "~/Desktop/matches.csv")
+
 
 #### names #### 
 	[1] "V1"                                              "File"
