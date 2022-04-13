@@ -1,5 +1,9 @@
+# This file contains code to read multiple files from kinexon data. The files
+# are exports from the UI and represent a kind of summary of the game
+# statistics. Filenames starts with export*.csv. We saved all export files in a
+# folders that have the pattern Verein/Saison/Spieltag.
+ 
 #### set Path ####
-# setwd(Sys.getenv("kinexonPath"))
 setwd(Sys.getenv("MY_Ext"))
 
 #### load packages ####
@@ -8,7 +12,7 @@ library(hms)
 
 #### read data #### 
 
-all.files <- list.files(path = "Data/RAW", 
+all.files <- list.files(path = "RAW", 
   recursive = TRUE,
   pattern = "export",
   full.names = TRUE)
@@ -19,9 +23,9 @@ dat <- rbindlist( l, fill = TRUE, idcol = "File")
 #### clean data ####
 
 ### add filename and split filename to get Saison and Spieltag ### 
-cols <- c("Data","RAW","Verein","Saison", "Spieltag1","Spieltag","Filename")
+cols <- c("RAW","Verein","Saison", "Spieltag1","Spieltag","Filename")
 dat[, c(cols) := tstrsplit(File, "/", fixed=TRUE)]
-dat[ ,c("Data", "RAW", "Spieltag1","Filename") := NULL]
+dat[ ,c("RAW", "Spieltag1","Filename") := NULL]
 
 ### format timestamp ###
 dat[, 'Session begin date (Local timezone)' := as.POSIXct(dat$'Session begin date (Local timezone)', 
@@ -93,11 +97,16 @@ dat_match$Description  <- as.factor(dat_match$Description)
 dat_HZ  <- droplevels(dat_HZ)
 dat_match  <- droplevels(dat_match)
 
+#### save player names ####
+n <- dat[,c('Name', 'Player ID', 'Position', 'Group name')]
+pos <- unique(n)
+save(pos, file = "Rkinexon/data/Player.rda")
 
 
 #### remove all except data frame "dat_HZ" and "dat_match" ####
 rm(list=setdiff(ls(), c("dat_HZ", "dat_match")))
 
 #### save as csv ####
-write.csv(dat_HZ, "~/Desktop/export_HZ.csv")
-write.csv(dat_match, "~/Desktop/export_match.csv")
+write.csv(dat_HZ, "/Volumes/CSaal2/Kinexon/Data/CSV/export_HZ.csv")
+write.csv(dat_match, "/Volumes/CSaal2/Kinexon/Data/CSV/export_match.csv")
+
