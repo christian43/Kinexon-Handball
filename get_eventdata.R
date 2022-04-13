@@ -27,7 +27,7 @@ l <- lapply(all.files, fread, sep=";", fill = TRUE, na.strings="")
 
 #### remove colnames and format local timestamp ####
 
-# source("clean_event.R")
+source("src/clean_event.R")
 l <- lapply(l, function(x) clean_event(x))
 names(l) <- all.files
 event <- rbindlist( l, fill = TRUE, idcol = "File")
