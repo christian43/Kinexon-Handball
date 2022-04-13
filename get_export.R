@@ -1,7 +1,8 @@
 # This file contains code to read multiple files from kinexon data. The files
 # are exports from the UI and represent a kind of summary of the game
 # statistics. Filenames starts with export*.csv. We saved all export files in a
-# folders that have the pattern Verein/Saison/Spieltag.
+# folders that have the pattern Verein/Saison/Spieltag/#/*.csv. The output
+# contains two data frames.
  
 #### set Path ####
 setwd(Sys.getenv("MY_Ext"))
